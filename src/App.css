@@ -1,38 +1,71 @@
 .App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  align-items: center;
 }
 
-.App-link {
-  color: #61dafb;
+.Board {
+  text-align: center;
+  display: grid;
+  grid-template-columns: repeat(30, 24px);
+  background-color: #f0f0f0;
+  padding: 10px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.cell {
+  position: relative;
+  background-color: grey;
+  text-align: center;
+  font-size: 16px;
+  line-height: 1.5;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  padding: 0;
+  padding-bottom: calc(100% / 30);
+  background-size: 24px;
+}
+
+.closed {
+  background-image: url(/public/unopened.svg);
+}
+
+.type0.opened {
+  background-image: url(/public/type0.svg);
+}
+
+.type1.opened {
+  background-image: url(/public/type1.svg);
+}
+
+.type2.opened {
+  background-image: url(/public/type2.svg);
+}
+
+.type3.opened {
+  background-image: url(/public/type3.svg);
+}
+
+.type4.opened {
+  background-image: url(/public/type4.svg);
+}
+
+.type5.opened {
+  background-image: url(/public/type5.svg);
+}
+
+.type6.opened {
+  background-image: url(/public/type6.svg);
+}
+
+.type7.opened {
+  background-image: url(/public/type7.svg);
+}
+
+.type8.opened {
+  background-image: url(/public/type8.svg);
+}
+
+.type9.opened {
+  background-image: url(/public/mine.svg);
 }
