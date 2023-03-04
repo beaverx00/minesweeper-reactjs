@@ -33,28 +33,27 @@ function App() {
   let [start, setStart] = useState(false);
 
   useEffect(() => {
-    let c = [];
-    for (var i = 0; i < WIDTH * HEIGHT; i++) {
-      c.push({
+    let cells = [];
+    for (let i = 0; i < WIDTH * HEIGHT; i++) {
+      cells.push({
         type: CELL_TYPE.EMPTY,
         opened: false
       });
     }
-    setCells(c);
+    setCells(cells);
   }, []);
 
   const findNeighbor = (ind) => {
     let row = Math.floor(ind / WIDTH);
     let col = ind % WIDTH;
     let neighbors = [];
-    for (var i = -1; i <= 1; i++) {
-      for (var j = -1; j <= 1; j++) {
-        if (i != 0 || j != 0) {
-          var row_delta = row + i;
-          var col_delta = col + j;
+    for (let i = -1; i <= 1; i++) {
+      for (let j = -1; j <= 1; j++) {
+        if (i !== 0 || j !== 0) {
+          let row_delta = row + i;
+          let col_delta = col + j;
 
           if (row_delta >= 0 && row_delta < HEIGHT && col_delta >= 0 && col_delta < WIDTH) {
-            // console.log(row_delta, col_delta);
             neighbors.push((row_delta * WIDTH) + col_delta);
           }
         }
@@ -66,21 +65,21 @@ function App() {
   const placeMine = (ind) => {
     let copy = [...cells];
 
-    var i = 0;
+    let i = 0;
     while (i < NUM_MINE) {
-      var loc = Math.floor(Math.random() * WIDTH * HEIGHT);
-      if (loc != ind) {
+      let loc = Math.floor(Math.random() * WIDTH * HEIGHT);
+      if (loc !== ind) {
         copy[loc].type = CELL_TYPE.MINE;
         i++;
       }
     }
-    for (var i = 0; i < copy.length; i++) {
-      if (copy[i].type != CELL_TYPE.MINE) {
+    for (let i = 0; i < copy.length; i++) {
+      if (copy[i].type !== CELL_TYPE.MINE) {
         let neighbors = findNeighbor(i);
-        copy[i].type = neighbors.filter(loc => copy[loc].type == CELL_TYPE.MINE).length;
+        copy[i].type = neighbors.filter(loc => copy[loc].type === CELL_TYPE.MINE).length;
       }
     }
-
+    console.log(copy);
     setCells(copy);
   };
 
@@ -90,9 +89,31 @@ function App() {
       setStart(true);
     }
     let copy = [...cells];
+
+    if (copy[ind].type === CELL_TYPE.EMPTY) {
+      let indexes = [ind];
+
+      let i = 0;
+      while (i < indexes.length) {
+        for (const neighbor of findNeighbor(indexes[i])) {
+          if (copy[neighbor].type === CELL_TYPE.EMPTY && indexes.find(item => item === neighbor) === undefined)
+            indexes.push(neighbor)
+        }
+        i++;
+      }
+      console.log(indexes);
+      for (const index of indexes) {
+        for (const neighbor of findNeighbor(index)) {
+          copy[neighbor].opened = true;
+
+        }
+      }
+    } else {
+      copy[ind].opened = true;
+    }
+
     copy[ind].opened = true;
     setCells(copy);
-    //TODO: click empty cell, spread
   };
 
   return (
