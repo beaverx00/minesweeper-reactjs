@@ -24,13 +24,25 @@ const GAME_STATUS = {
 Object.freeze(CELL_TYPE);
 Object.freeze(GAME_STATUS);
 
-const WIDTH = 30;
-const HEIGHT = 16;
-const NUM_MINE = 99;
+const WIDTH = 11;
+const HEIGHT = 18;
+const NUM_MINE = 35;
 
+// TODO: Change game status
+// Before first click => READY (timer stop)
+// After first click => PLAYING (timer start)
+// Click mine => GAMEOVER (timer stop)
+// Click every cells except mines => WIN (timer stop)
+
+// TODO: Make restart button for going READY status whenever click
+// TODO: Add three mode: Beginner, Intermediate, Expert
+// TODO: Right click for FLAG
+// TODO: Left + Right click for spread
+// TODO: keyboard mapping
 function App() {
   let [cells, setCells] = useState([]);
-  let [start, setStart] = useState(false);
+  let [status, setStatus] = useState(GAME_STATUS.READY);
+  let [timer, setTimer] = useState(0);
 
   useEffect(() => {
     let cells = [];
@@ -41,6 +53,7 @@ function App() {
       });
     }
     setCells(cells);
+
   }, []);
 
   const findNeighbor = (ind) => {
