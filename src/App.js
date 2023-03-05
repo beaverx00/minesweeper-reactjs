@@ -84,47 +84,52 @@ function App() {
   };
 
   const clickCell = (ind) => {
-    if (!start) {
+    if (cells[ind].type == CELL_TYPE.MINE) {
+      setStatus(GAME_STATUS.GAMEOVER);
+    }
+    if (status === GAME_STATUS.READY) {
       placeMine(ind);
-      setStart(true);
+      setStatus(GAME_STATUS.PLAYING);
     }
-    let copy = [...cells];
+    if ((status === GAME_STATUS.PLAYING) || (status === GAME_STATUS.READY)) {
+      let copy = [...cells];
 
-    if (copy[ind].type === CELL_TYPE.EMPTY) {
-      let indexes = [ind];
+      if (copy[ind].type === CELL_TYPE.EMPTY) {
+        let indexes = [ind];
 
-      let i = 0;
-      while (i < indexes.length) {
-        for (const neighbor of findNeighbor(indexes[i])) {
-          if (copy[neighbor].type === CELL_TYPE.EMPTY && indexes.find(item => item === neighbor) === undefined)
-            indexes.push(neighbor)
+        let i = 0;
+        while (i < indexes.length) {
+          copy[indexes[i]].opened = true;
+          for (const neighbor of findNeighbor(indexes[i])) {
+            if (copy[neighbor].type === CELL_TYPE.EMPTY && indexes.find(item => item === neighbor) === undefined)
+              indexes.push(neighbor)
+          }
+          i++;
         }
-        i++;
-      }
-      console.log(indexes);
-      for (const index of indexes) {
-        for (const neighbor of findNeighbor(index)) {
-          copy[neighbor].opened = true;
-
+        console.log(indexes);
+        for (const index of indexes) {
+          for (const neighbor of findNeighbor(index)) {
+            copy[neighbor].opened = true;
+          }
         }
+      } else {
+        copy[ind].opened = true;
       }
-    } else {
-      copy[ind].opened = true;
+
+      setCells(copy);
     }
-
-    copy[ind].opened = true;
-    setCells(copy);
   };
 
   return (
     <div className="App">
+      <p>{status}</p>
       <div className="Board">
         {
           cells.map((cell, ind) => {
             let row = Math.floor(ind / WIDTH);
             let col = ind % WIDTH;
             return (
-              <div className={"cell type" + cell.type + " " + (cell.opened ? "opened" : "closed")}
+              <div className={"cell " + (cell.opened ? "opened " + "type" + cell.type : "closed")}
                 data-x={row}
                 data-y={col}
                 onClick={() => { clickCell(ind); }}>
