@@ -7,23 +7,19 @@
 .Board {
   text-align: center;
   display: grid;
-  grid-template-columns: repeat(30, 24px);
+  grid-template-columns: repeat(11, 1fr);
+  grid-template-rows: repeat(18, 1fr);
   background-color: #f0f0f0;
-  padding: 10px;
 }
 
 .cell {
-  position: relative;
   background-color: grey;
-  text-align: center;
-  font-size: 16px;
-  line-height: 1.5;
-  width: 24px;
-  height: 24px;
+  width: min(calc(100vh/18), calc(100vw/11));
+  height: min(calc(100vh/18), calc(100vw/11));
   margin: 0;
   padding: 0;
-  padding-bottom: calc(100% / 30);
-  background-size: 25px;
+  background-position: center;
+  background-size: cover;
 }
 
 .closed {
