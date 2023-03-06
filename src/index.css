@@ -1,8 +1,16 @@
+html {
+  height: 100%;
+  display: table;
+  margin: auto;
+  background-color: rgb(49, 49, 49);
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  vertical-align: middle;
+  display: table-cell;
+  height: 100%;
+  font-family: 'Chivo Mono', 'Tilt Warp';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
