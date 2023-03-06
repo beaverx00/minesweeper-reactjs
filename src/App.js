@@ -120,7 +120,7 @@ function App() {
       return;
     }
     let copy = [...cells];
-    if (copy[ind].type == CELL_TYPE.MINE) {
+    if (copy[ind].type === CELL_TYPE.MINE) {
       copy[ind].type = CELL_TYPE.CLICKED_MINE;
       setStatus(GAME_STATUS.GAMEOVER);
       for (var i = 0; i < BOARD_SIZE; i++) {
@@ -165,6 +165,8 @@ function App() {
         for (var i = 0; i < BOARD_SIZE; i++) {
           if (copy[i].type === CELL_TYPE.MINE) {
             copy[i].flag = true;
+          } else {
+            copy[i].opened = true;
           }
         }
         setNumFlag(NUM_MINE);
