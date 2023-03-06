@@ -11,14 +11,15 @@ const CELL_TYPE = {
   SIX: 6,
   SEVEN: 7,
   EIGHT: 8,
-  MINE: 9
+  MINE: '💣',
+  CLICKED_MINE: '💥',
 };
 
 const GAME_STATUS = {
-  READY: 0,
-  PLAYING: 1,
-  WIN: 2,
-  GAMEOVER: 3,
+  READY: "🙂",
+  PLAYING: "🧐",
+  WIN: "😎",
+  GAMEOVER: "😵",
 };
 
 Object.freeze(CELL_TYPE);
@@ -26,35 +27,51 @@ Object.freeze(GAME_STATUS);
 
 const WIDTH = 11;
 const HEIGHT = 18;
+const BOARD_SIZE = WIDTH * HEIGHT;
 const NUM_MINE = 35;
 
-// TODO: Change game status
-// Before first click => READY (timer stop)
-// After first click => PLAYING (timer start)
-// Click mine => GAMEOVER (timer stop)
-// Click every cells except mines => WIN (timer stop)
-
-// TODO: Make restart button for going READY status whenever click
 // TODO: Add three mode: Beginner, Intermediate, Expert
-// TODO: Right click for FLAG
 // TODO: Left + Right click for spread
 // TODO: keyboard mapping
+// FIXME: Gameover when flag is on the safe location
 function App() {
   let [cells, setCells] = useState([]);
   let [status, setStatus] = useState(GAME_STATUS.READY);
   let [timer, setTimer] = useState(0);
+  let [intervalId, setIntervalId] = useState(undefined);
+  let [numFlag, setNumFlag] = useState(0);
 
-  useEffect(() => {
+  const initializeBoard = () => {
     let cells = [];
-    for (let i = 0; i < WIDTH * HEIGHT; i++) {
+    for (let i = 0; i < BOARD_SIZE; i++) {
       cells.push({
         type: CELL_TYPE.EMPTY,
-        opened: false
+        opened: false,
+        flag: false
       });
     }
     setCells(cells);
+  }
 
-  }, []);
+  useEffect(() => {
+    switch (status) {
+      case GAME_STATUS.READY:
+        initializeBoard();
+        setNumFlag(0);
+        clearInterval(intervalId);
+        setTimer(0);
+        break;
+
+      case GAME_STATUS.PLAYING:
+        setIntervalId(setInterval(() => { setTimer(s => s + 1); }, 1000));
+        break;
+      default:
+        clearInterval(intervalId);
+        break;
+    }
+
+
+  }, [status]);
 
   const findNeighbor = (ind) => {
     let row = Math.floor(ind / WIDTH);
@@ -80,7 +97,7 @@ function App() {
 
     let i = 0;
     while (i < NUM_MINE) {
-      let loc = Math.floor(Math.random() * WIDTH * HEIGHT);
+      let loc = Math.floor(Math.random() * BOARD_SIZE);
       if (loc !== ind) {
         copy[loc].type = CELL_TYPE.MINE;
         i++;
@@ -92,25 +109,36 @@ function App() {
         copy[i].type = neighbors.filter(loc => copy[loc].type === CELL_TYPE.MINE).length;
       }
     }
-    console.log(copy);
     setCells(copy);
   };
 
   const clickCell = (ind) => {
-    if (cells[ind].type == CELL_TYPE.MINE) {
+    if ((cells[ind].opened)
+      || (cells[ind].flag)
+      || (status === GAME_STATUS.GAMEOVER)
+      || (status === GAME_STATUS.WIN)) {
+      return;
+    }
+    let copy = [...cells];
+    if (copy[ind].type == CELL_TYPE.MINE) {
+      copy[ind].type = CELL_TYPE.CLICKED_MINE;
       setStatus(GAME_STATUS.GAMEOVER);
+      for (var i = 0; i < BOARD_SIZE; i++) {
+        if (copy[i].type === CELL_TYPE.MINE) {
+          copy[i].opened = true;
+        }
+      }
     }
     if (status === GAME_STATUS.READY) {
       placeMine(ind);
       setStatus(GAME_STATUS.PLAYING);
     }
     if ((status === GAME_STATUS.PLAYING) || (status === GAME_STATUS.READY)) {
-      let copy = [...cells];
 
       if (copy[ind].type === CELL_TYPE.EMPTY) {
         let indexes = [ind];
 
-        let i = 0;
+        var i = 0;
         while (i < indexes.length) {
           copy[indexes[i]].opened = true;
           for (const neighbor of findNeighbor(indexes[i])) {
@@ -119,39 +147,77 @@ function App() {
           }
           i++;
         }
-        console.log(indexes);
         for (const index of indexes) {
           for (const neighbor of findNeighbor(index)) {
             copy[neighbor].opened = true;
+            if (copy[neighbor].flag) {
+              copy[neighbor].flag = false;
+              setNumFlag(s => s - 1);
+            }
           }
         }
       } else {
         copy[ind].opened = true;
       }
 
+      let numOpened = copy.filter(cell => cell.type !== CELL_TYPE.MINE && cell.opened === true).length;
+      if (numOpened === ((BOARD_SIZE) - NUM_MINE)) {
+        for (var i = 0; i < BOARD_SIZE; i++) {
+          if (copy[i].type === CELL_TYPE.MINE) {
+            copy[i].flag = true;
+          }
+        }
+        setNumFlag(NUM_MINE);
+        setStatus(GAME_STATUS.WIN);
+      }
+
+    }
+    setCells(copy);
+  };
+
+  const rightClickCell = (e, ind) => {
+    e.preventDefault();
+    if ((status === GAME_STATUS.PLAYING) && (!cells[ind].opened)) {
+      let copy = [...cells];
+      if (copy[ind].flag) {
+        setNumFlag(s => s - 1);
+      } else {
+        setNumFlag(s => s + 1);
+      }
+      copy[ind].flag = !copy[ind].flag;
       setCells(copy);
     }
-  };
+  }
 
   return (
     <div className="App">
-      <p>{status}</p>
+      <div className="LeftMine">💣{" " + (NUM_MINE - numFlag)}</div>
+      <div className="Face" onClick={() => { setStatus(GAME_STATUS.READY); }}>{status}</div>
+      <div className="Timer">⏳{" " + timer}</div>
       <div className="Board">
         {
           cells.map((cell, ind) => {
-            let row = Math.floor(ind / WIDTH);
-            let col = ind % WIDTH;
             return (
-              <div className={"cell " + (cell.opened ? "opened " + "type" + cell.type : "closed")}
-                data-x={row}
-                data-y={col}
-                onClick={() => { clickCell(ind); }}>
+              <div className={
+                "Cell "
+                + (cell.opened ? "opened " + "type" + cell.type : "closed")
+                + (cell.flag ? " flag" : "")
+              }
+                onClick={() => { clickCell(ind); }}
+                onContextMenu={(e) => { rightClickCell(e, ind); }}>
+                {
+                  cell.opened
+                    ? cell.type
+                    : cell.flag
+                      ? '🚩'
+                      : null
+                }
               </div>
             )
           })
         }
       </div>
-    </div>
+    </div >
   );
 }
 
