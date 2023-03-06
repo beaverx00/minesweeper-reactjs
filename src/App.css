@@ -1,67 +1,95 @@
 .App {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
+  background-color: rgb(49, 49, 49);
+  width: calc(min(calc(100vh/18), calc(100vw/11))*11*0.9);
+  font-weight: bold;
+  font-family: "Chivo Mono";
+  font-size: min(5vh, 5vw);
+  user-drag: none;
+  -webkit-user-drag: none;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+.LeftMine {
+  width: 33%;
+  text-align: left;
+}
+
+.Face {
+  width: 33%;
+  text-align: center;
+}
+
+.Timer {
+  width: 33%;
+  text-align: right;
 }
 
 .Board {
-  text-align: center;
   display: grid;
   grid-template-columns: repeat(11, 1fr);
   grid-template-rows: repeat(18, 1fr);
-  background-color: #f0f0f0;
 }
 
-.cell {
-  background-color: grey;
-  width: min(calc(100vh/18), calc(100vw/11));
-  height: min(calc(100vh/18), calc(100vw/11));
+.Cell {
+  font-family: "Tilt Warp";
+  border: 2px solid rgb(49, 49, 49);
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  background-position: center;
-  background-size: cover;
+  width: calc(min(calc(100vh/18), calc(100vw/11))*0.9);
+  height: calc(min(calc(100vh/18), calc(100vw/11))*0.9);
+  font-size: calc(min(calc(100vh/18), calc(100vw/11)) * 0.7);
+  vertical-align: middle;
+  line-height: calc(min(calc(100vh/18), calc(100vw/11))*0.9);
+  text-align: center;
 }
 
 .closed {
-  background-image: url(/public/unopened.svg);
+  box-shadow: inset 2px 2px rgb(128, 128, 128);
+  background-color: rgb(93, 93, 93);
 }
 
 .type0.opened {
-  background-image: url(/public/type0.svg);
+  font-size: 0px;
 }
 
 .type1.opened {
-  background-image: url(/public/type1.svg);
+  color: skyblue;
 }
 
 .type2.opened {
-  background-image: url(/public/type2.svg);
+  color: green;
 }
 
 .type3.opened {
-  background-image: url(/public/type3.svg);
+  color: red;
 }
 
 .type4.opened {
-  background-image: url(/public/type4.svg);
+  color: darkblue;
 }
 
 .type5.opened {
-  background-image: url(/public/type5.svg);
+  color: crimson;
 }
 
 .type6.opened {
-  background-image: url(/public/type6.svg);
+  color: coral;
 }
 
 .type7.opened {
-  background-image: url(/public/type7.svg);
+  color: purple;
 }
 
 .type8.opened {
-  background-image: url(/public/type8.svg);
+  color: silver;
 }
 
-.type9.opened {
-  background-image: url(/public/mine.svg);
-}
+.type9.opened {}
