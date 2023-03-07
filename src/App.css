@@ -3,7 +3,6 @@
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  background-color: rgb(49, 49, 49);
   width: calc(min(calc(100vh/18), calc(100vw/11))*11*0.9);
   font-weight: bold;
   font-family: "Chivo Mono";
@@ -19,6 +18,7 @@
 .LeftMine {
   width: 33%;
   text-align: left;
+  color: lavender;
 }
 
 .Face {
@@ -29,6 +29,7 @@
 .Timer {
   width: 33%;
   text-align: right;
+  color: lavender;
 }
 
 .Board {
@@ -39,7 +40,7 @@
 
 .Cell {
   font-family: "Tilt Warp";
-  border: 2px solid rgb(49, 49, 49);
+  border: 2px solid #625750;
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -52,8 +53,8 @@
 }
 
 .closed {
-  box-shadow: inset 2px 2px rgb(128, 128, 128);
-  background-color: rgb(93, 93, 93);
+  box-shadow: inset 2px 2px #c6bcb6;
+  background-color: #96897f;
 }
 
 .type0.opened {
@@ -65,31 +66,31 @@
 }
 
 .type2.opened {
-  color: green;
+  color: lightgreen;
 }
 
 .type3.opened {
-  color: red;
+  color: lightsalmon;
 }
 
 .type4.opened {
-  color: darkblue;
+  color: cadetblue;
 }
 
 .type5.opened {
-  color: crimson;
+  color: chocolate;
 }
 
 .type6.opened {
-  color: coral;
+  color: darkturquoise;
 }
 
 .type7.opened {
-  color: purple;
+  color: plum;
 }
 
 .type8.opened {
-  color: silver;
+  color: lightslategray;
 }
 
 .type9.opened {}
