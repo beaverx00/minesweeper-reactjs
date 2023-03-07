@@ -205,7 +205,7 @@ function App() {
 
   return (
     <div className="App">
-      <div className="LeftMine">&#x2690;💣{" " + (NUM_MINE - numFlag)}</div>
+      <div className="LeftMine">💣{" " + (NUM_MINE - numFlag)}</div>
       <div className="Face" onClick={() => { setStatus(GAME_STATUS.READY); }}>{status}</div>
       <div className="Timer">⏳{" " + timer}</div>
       <div className="Board">
