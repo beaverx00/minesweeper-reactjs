@@ -33,7 +33,7 @@ const NUM_MINE = 35;
 // TODO: Add three mode: Beginner, Intermediate, Expert
 // TODO: Left + Right click for spread
 // TODO: keyboard mapping
-// FIXME: Gameover when flag is on the safe location
+// FIXME: Gameover when flag is on the safe location => X mark
 function App() {
   let [cells, setCells] = useState([]);
   let [status, setStatus] = useState(GAME_STATUS.READY);
@@ -98,7 +98,7 @@ function App() {
     let i = 0;
     while (i < NUM_MINE) {
       let loc = Math.floor(Math.random() * BOARD_SIZE);
-      if (loc !== ind) {
+      if ((loc !== ind) && (copy[loc].type !== CELL_TYPE.MINE)) {
         copy[loc].type = CELL_TYPE.MINE;
         i++;
       }
@@ -119,61 +119,73 @@ function App() {
       || (status === GAME_STATUS.WIN)) {
       return;
     }
+
     let copy = [...cells];
-    if (copy[ind].type === CELL_TYPE.MINE) {
-      copy[ind].type = CELL_TYPE.CLICKED_MINE;
-      setStatus(GAME_STATUS.GAMEOVER);
-      for (var i = 0; i < BOARD_SIZE; i++) {
-        if (copy[i].type === CELL_TYPE.MINE) {
-          copy[i].opened = true;
-        }
-      }
-    }
+
     if (status === GAME_STATUS.READY) {
       placeMine(ind);
       setStatus(GAME_STATUS.PLAYING);
     }
+
     if ((status === GAME_STATUS.PLAYING) || (status === GAME_STATUS.READY)) {
-
-      if (copy[ind].type === CELL_TYPE.EMPTY) {
-        let indexes = [ind];
-
-        var i = 0;
-        while (i < indexes.length) {
-          copy[indexes[i]].opened = true;
-          for (const neighbor of findNeighbor(indexes[i])) {
-            if (copy[neighbor].type === CELL_TYPE.EMPTY && indexes.find(item => item === neighbor) === undefined)
-              indexes.push(neighbor)
-          }
-          i++;
-        }
-        for (const index of indexes) {
-          for (const neighbor of findNeighbor(index)) {
-            copy[neighbor].opened = true;
-            if (copy[neighbor].flag) {
-              copy[neighbor].flag = false;
-              setNumFlag(s => s - 1);
-            }
-          }
-        }
-      } else {
-        copy[ind].opened = true;
+      if ((copy[ind].opened === true) || (copy[ind].flag === true)) {
+        return;
       }
 
-      let numOpened = copy.filter(cell => cell.type !== CELL_TYPE.MINE && cell.opened === true).length;
-      if (numOpened === ((BOARD_SIZE) - NUM_MINE)) {
+      if (copy[ind].type === CELL_TYPE.MINE) {
+        copy[ind].type = CELL_TYPE.CLICKED_MINE;
+        setStatus(GAME_STATUS.GAMEOVER);
         for (var i = 0; i < BOARD_SIZE; i++) {
-          if (copy[i].type === CELL_TYPE.MINE) {
-            copy[i].flag = true;
-          } else {
+          if (
+            ((copy[i].type === CELL_TYPE.MINE) || (copy[i].type === CELL_TYPE.CLICKED_MINE))
+            && (!copy[i].flag)) {
             copy[i].opened = true;
           }
         }
-        setNumFlag(NUM_MINE);
-        setStatus(GAME_STATUS.WIN);
-      }
+      } else {
+        if (copy[ind].type === CELL_TYPE.EMPTY) {
+          let indexes = [ind];
 
+          var i = 0;
+          while (i < indexes.length) {
+            copy[indexes[i]].opened = true;
+            for (const neighbor of findNeighbor(indexes[i])) {
+              if (copy[neighbor].type === CELL_TYPE.EMPTY && indexes.find(item => item === neighbor) === undefined)
+                indexes.push(neighbor)
+            }
+            i++;
+          }
+          for (const index of indexes) {
+            for (const neighbor of findNeighbor(index)) {
+              copy[neighbor].opened = true;
+              if (copy[neighbor].flag) {
+                copy[neighbor].flag = false;
+                setNumFlag(s => s - 1);
+              }
+            }
+          }
+        } else {
+          copy[ind].opened = true;
+        }
+      }
+    } else {
+      return;
     }
+
+    let numOpened = copy.filter(cell => (cell.type !== CELL_TYPE.MINE) && (cell.type !== CELL_TYPE.CLICKED_MINE) && (cell.opened === true)).length;
+    if (numOpened === ((BOARD_SIZE) - NUM_MINE)) {
+      for (var i = 0; i < BOARD_SIZE; i++) {
+        if (copy[i].type === CELL_TYPE.MINE) {
+          copy[i].flag = true;
+        } else {
+          copy[i].opened = true;
+        }
+      }
+      setNumFlag(NUM_MINE);
+      setStatus(GAME_STATUS.WIN);
+    }
+
+
     setCells(copy);
   };
 
@@ -193,7 +205,7 @@ function App() {
 
   return (
     <div className="App">
-      <div className="LeftMine">💣{" " + (NUM_MINE - numFlag)}</div>
+      <div className="LeftMine">&#x2690;💣{" " + (NUM_MINE - numFlag)}</div>
       <div className="Face" onClick={() => { setStatus(GAME_STATUS.READY); }}>{status}</div>
       <div className="Timer">⏳{" " + timer}</div>
       <div className="Board">
